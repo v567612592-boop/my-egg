@@ -5,6 +5,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Cache-busting comment: 2026-07-01 11:21:00 UTC
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
