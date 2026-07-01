@@ -50,20 +50,16 @@ Avoid: realistic rendering, 3D rendering, painterly texture, dark fantasy, gothi
       prompt: fullPrompt,
       n: 1,
       size: "1024x1536",
-      response_format: "b64_json",
-      quality: "high",
     });
 
-    const imageBase64 = response.data?.[0]?.b64_json;
+    const imageUrl = response.data?.[0]?.url;
 
-    if (!imageBase64) {
+    if (!imageUrl) {
       return NextResponse.json(
         { error: "이미지 생성에 실패했습니다." },
         { status: 500 }
       );
     }
-
-    const imageSrc = `data:image/png;base64,${imageBase64}`;
 
     // 만약 데이터베이스 레코드 ID가 있다면 DB의 image_url 컬럼에 이 이미지 주소를 업데이트
     if (resultId) {
@@ -71,7 +67,7 @@ Avoid: realistic rendering, 3D rendering, painterly texture, dark fantasy, gothi
         const { supabase } = await import("@/lib/supabase");
         const { error: updateError } = await supabase
           .from("guardian_results")
-          .update({ image_url: imageSrc })
+          .update({ image_url: imageUrl })
           .eq("id", resultId);
         
         if (updateError) {
@@ -83,7 +79,7 @@ Avoid: realistic rendering, 3D rendering, painterly texture, dark fantasy, gothi
     }
 
     return NextResponse.json({
-      image: imageSrc,
+      image: imageUrl,
     });
   } catch (error: unknown) {
     console.error("Image generation error:", error);
